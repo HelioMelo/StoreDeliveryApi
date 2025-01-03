@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: bitnami/postgresql:latest
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=${DATASOURCE_USERNAME}
+      - POSTGRES_PASSWORD=${DATASOURCE_PASSWORD}
+      - POSTGRES_DB=${DATASOURCE}
+    volumes:
+      - stores_pg_data:/bitnami/postgresql
+    networks:
+      - pgcloudbeaver-network-external
+
+  pgadmin-docker:
+    image: dpage/pgadmin4
+    container_name: dev-pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${DATASOURCE_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${DATASOURCE_PASSWORD}
+    volumes:
+      - stores_pgAdmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - pgcloudbeaver-network-external
+
+volumes:
+  stores_pg_data:
+  stores_pgAdmin_data:
+
+networks:
+  pgcloudbeaver-network-external:
+    driver: bridge
