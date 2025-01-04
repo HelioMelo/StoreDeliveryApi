@@ -5,10 +5,9 @@ import {
   ValidationPipe,
   Body,
 } from '@nestjs/common';
-
-import { LoginDTO } from '../dto/login.dto';
-import { AuthService } from '../service/auth.service';
-import { ReturnLoginDTO } from '../dto/returnLogin.dto';
+import { AuthService } from './auth.service';
+import { ReturnLoginDTO } from './dto/returnLogin.dto';
+import { LoginDTO } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
