@@ -1,6 +1,6 @@
 import { CreateUserDTO } from '../dtos/createUser.dto';
 
-export const createUserData: CreateUserDTO = {
+export const CreateUserData: CreateUserDTO = {
   cpf: '3214215151',
   email: 'email@email.com',
   name: 'sdfsdfds',

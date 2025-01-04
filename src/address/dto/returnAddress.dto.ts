@@ -1,4 +1,4 @@
-import { AddressEntity } from '../entities/address.entity';
+import { AddressEntity } from '../../address/entities/address.entity';
 
 export class ReturnAddressDTO {
   complement: string;
