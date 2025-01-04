@@ -31,9 +31,7 @@ export class CreateTableUser1735942426942 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(`
-        drop table public.user;
-        
-        `);
+    await queryRunner.query(`DROP SEQUENCE IF EXISTS public.user_id_seq`);
+    await queryRunner.query(`DROP TABLE IF EXISTS public.user`);
   }
 }
