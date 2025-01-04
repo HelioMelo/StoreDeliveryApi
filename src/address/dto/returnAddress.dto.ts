@@ -5,11 +5,13 @@ export class ReturnAddressDTO {
   numberAddress: string;
   cep: string;
   city: string;
+  state: string;
 
   constructor(address: AddressEntity) {
     this.complement = address.complement;
     this.numberAddress = address.numberAddress;
     this.cep = address.cep;
     this.city = address.city;
+    this.state = address.state;
   }
 }

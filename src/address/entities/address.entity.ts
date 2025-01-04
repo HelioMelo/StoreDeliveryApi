@@ -29,6 +29,9 @@ export class AddressEntity {
   @Column({ name: 'city', nullable: false })
   city: string;
 
+  @Column({ name: 'state', nullable: false })
+  state: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

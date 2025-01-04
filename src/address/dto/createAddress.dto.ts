@@ -13,4 +13,7 @@ export class CreateAddressDTO {
 
   @IsString()
   city: string;
+
+  @IsString()
+  state: string;
 }

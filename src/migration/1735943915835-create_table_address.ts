@@ -3,20 +3,20 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class CreateTableAddress1735943915835 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      CREATE TABLE public.address (
-          id integer NOT NULL,
+      CREATE TABLE IF NOT EXISTS public.address (
+          id SERIAL PRIMARY KEY,
           user_id integer NOT NULL,
-          complement character varying,
-          number integer NOT NULL,
-          cep character varying NOT NULL,
-          city character varying NOT NULL,
-          created_at timestamp without time zone DEFAULT now() NOT NULL,
-          updated_at timestamp without time zone DEFAULT now() NOT NULL,
-          PRIMARY KEY (id),
+          complement VARCHAR,
+          number VARCHAR NOT NULL,
+          cep VARCHAR NOT NULL,
+          city VARCHAR NOT NULL,
+          state VARCHAR NOT NULL,
+          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
           FOREIGN KEY (user_id) REFERENCES public.user(id)
       );
 
-      CREATE SEQUENCE public.address_id_seq
+      CREATE SEQUENCE IF NOT EXISTS public.address_id_seq
           AS integer
           START WITH 1
           INCREMENT BY 1
@@ -31,7 +31,9 @@ export class CreateTableAddress1735943915835 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP SEQUENCE public.address_id_seq`);
-    await queryRunner.query(`DROP TABLE public.address`);
+    await queryRunner.query(`
+      DROP SEQUENCE IF EXISTS public.address_id_seq;
+      DROP TABLE IF EXISTS public.address;
+    `);
   }
 }
