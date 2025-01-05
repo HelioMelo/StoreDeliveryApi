@@ -1,10 +1,11 @@
+import { CreateUserData } from './../testData/create.user.data';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserType } from '../enum/user-type.enum';
 import { UserService } from '../user.service';
 import { UserEntityData } from '../testData/user.data';
-import { createUserData } from '../testData/create.user.data';
+
 import { UserEntity } from '../entities/user.entity';
 
 describe('UserService', () => {
@@ -83,14 +84,14 @@ describe('UserService', () => {
   });
 
   it('should return error if user exist', async () => {
-    await expect(service.createUser(createUserData)).rejects.toThrow();
+    await expect(service.createUser(CreateUserData)).rejects.toThrow();
   });
 
   it('should return user if user not exist', async () => {
     const spy = jest.spyOn(userRepository, 'save');
     jest.spyOn(userRepository, 'findOne').mockResolvedValue(undefined);
 
-    const user = await service.createUser(createUserData);
+    const user = await service.createUser(CreateUserData);
 
     expect(user).toEqual(UserEntityData);
     expect(spy.mock.calls[0][0].typeUser).toEqual(UserType.User);
