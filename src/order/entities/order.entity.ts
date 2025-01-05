@@ -24,7 +24,7 @@ export class OrderEntity {
   @Column({ name: 'address_id', nullable: false })
   addressId: number;
 
-  @Column({ name: 'date', nullable: false })
+  @Column({ name: 'date', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
 
   @Column({ name: 'payment_id', nullable: false })
@@ -51,5 +51,6 @@ export class OrderEntity {
   @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.order)
   ordersProduct?: OrderProductEntity[];
 
+  @Column({ name: 'amount_products', nullable: true })
   amountProducts?: number;
 }

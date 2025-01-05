@@ -41,24 +41,22 @@ export class PaymentService {
 
   async createPayment(
     createOrderDTO: CreateOrderDTO,
-    // products: ProductEntity[],
-    // cart: CartEntity,
+    products: ProductEntity[],
+    cart: CartEntity,
   ): Promise<PaymentEntity> {
-    // const finalPrice = this.generateFinalPrice(cart, products);
+    const finalPrice = this.generateFinalPrice(cart, products);
 
     if (createOrderDTO.amountPayments) {
       const paymentCreditCard = new PaymentCreditCardEntity(
         PaymentType.Done,
+        finalPrice,
         0,
-        0,
-        0,
+        finalPrice,
         createOrderDTO,
       );
       return this.paymentRepository.save(paymentCreditCard);
     }
 
-    throw new BadRequestException(
-      'Amount Payments or code pix or date payment not found',
-    );
+    throw new BadRequestException('Amount Payments not found');
   }
 }

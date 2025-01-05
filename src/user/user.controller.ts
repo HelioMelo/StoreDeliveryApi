@@ -1,3 +1,4 @@
+import { UserId } from './../decorators/user-id-decorator';
 import { Roles } from './../decorators/roles.decorators';
 import {
   Controller,
@@ -25,16 +26,25 @@ export class UserController {
     return this.userService.createUser(createUser);
   }
 
-  @Roles(UserType.Admin)
-  @Get()
+  @Roles(UserType.Admin, UserType.Root)
+  @Get('/all')
   async getAllUser(): Promise<ReturnUserDTO[]> {
     return (await this.userService.getAllUser()).map(
       (userEntity) => new ReturnUserDTO(userEntity),
     );
   }
 
+  @Roles(UserType.Admin, UserType.Root)
   @Get('/:userId')
   async getUserById(@Param('userId') userId: number): Promise<ReturnUserDTO> {
+    return new ReturnUserDTO(
+      await this.userService.getUserByIdUsingRelations(userId),
+    );
+  }
+
+  @Roles(UserType.Admin, UserType.Root)
+  @Get()
+  async getInfoUser(@UserId() userId: number): Promise<ReturnUserDTO> {
     return new ReturnUserDTO(
       await this.userService.getUserByIdUsingRelations(userId),
     );

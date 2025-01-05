@@ -2,7 +2,7 @@ import { UserId } from './../decorators/user-id-decorator';
 import {
   Body,
   Controller,
-  Param,
+  Get,
   Post,
   UsePipes,
   ValidationPipe,
@@ -23,9 +23,13 @@ export class OrderController {
   @UsePipes(ValidationPipe)
   async createOrder(
     @Body() createOrderDTO: CreateOrderDTO,
-    @Param('cartId') cartId: number,
     @UserId() userId: number,
   ): Promise<OrderEntity> {
-    return this.orderService.createOrder(createOrderDTO, cartId, userId);
+    return this.orderService.createOrder(createOrderDTO, userId);
+  }
+
+  @Get()
+  async findOrdersUserId(@UserId() userId: number) {
+    return this.orderService.findOrderByUserId(userId);
   }
 }

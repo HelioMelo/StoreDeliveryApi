@@ -15,6 +15,7 @@ import { PaymentStatusModule } from './payment-status/payment-status.module';
 import { PaymentModule } from './payment/payment.module';
 import { OrderModule } from './order/order.module';
 import { OrderProductModule } from './order-product/order-product.module';
+import { CorreiosApiModule } from './correios-api/correios-api.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { OrderProductModule } from './order-product/order-product.module';
     PaymentModule,
     OrderModule,
     OrderProductModule,
+    CorreiosApiModule,
   ],
   controllers: [],
   providers: [
