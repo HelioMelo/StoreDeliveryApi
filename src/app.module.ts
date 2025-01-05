@@ -7,6 +7,14 @@ import { AuthModule } from './auth/auth.module';
 import { RolesGuard } from './guards/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
+import { CategoryModule } from './category/category.module';
+import { ProductModule } from './product/product.module';
+import { CartModule } from './cart/cart.module';
+import { CartProductModule } from './cart-product/cart-product.module';
+import { PaymentStatusModule } from './payment-status/payment-status.module';
+import { PaymentModule } from './payment/payment.module';
+import { OrderModule } from './order/order.module';
+import { OrderProductModule } from './order-product/order-product.module';
 
 @Module({
   imports: [
@@ -23,12 +31,21 @@ import { JwtModule } from '@nestjs/jwt';
       database: process.env.DATASOURCE_DATABASE,
       entities: [`${__dirname}/**/*.entity{.js,.ts}`],
       migrations: [`${__dirname}/migration/{.ts,*.js}`],
-      migrationsRun: true,
+      //migrationsRun: true,
+      synchronize: true,
     }),
     UserModule,
     AddressModule,
     AuthModule,
     JwtModule,
+    CategoryModule,
+    ProductModule,
+    CartModule,
+    CartProductModule,
+    PaymentStatusModule,
+    PaymentModule,
+    OrderModule,
+    OrderProductModule,
   ],
   controllers: [],
   providers: [

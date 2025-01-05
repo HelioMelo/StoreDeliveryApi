@@ -1,3 +1,4 @@
+import { Roles } from './../decorators/roles.decorators';
 import {
   Controller,
   Post,
@@ -12,6 +13,7 @@ import { UserService } from './user.service';
 
 import { ReturnUserDTO } from './dtos/returnUser.dto';
 import { UserEntity } from './entities/user.entity';
+import { UserType } from './enum/user-type.enum';
 
 @Controller('user')
 export class UserController {
@@ -23,6 +25,7 @@ export class UserController {
     return this.userService.createUser(createUser);
   }
 
+  @Roles(UserType.Admin)
   @Get()
   async getAllUser(): Promise<ReturnUserDTO[]> {
     return (await this.userService.getAllUser()).map(

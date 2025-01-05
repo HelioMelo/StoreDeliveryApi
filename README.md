@@ -20,3 +20,5 @@ teste auth
 npm run test src/auth/_tests/auth.service.spec.ts
 
 
+todos os testes 
+ npm run test
