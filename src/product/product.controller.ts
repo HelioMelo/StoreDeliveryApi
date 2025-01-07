@@ -44,4 +44,12 @@ export class ProductController {
   ): Promise<ProductEntity> {
     return this.productService.createProduct(createProduct);
   }
+
+  @Get('/:idProduct/delivery/:cep')
+  async findPriceDeliver(
+    @Param('idProduct') idProduct: number,
+    @Param('cep') cep: string,
+  ): Promise<any> {
+    return this.productService.findPriceDelivery(cep, idProduct);
+  }
 }

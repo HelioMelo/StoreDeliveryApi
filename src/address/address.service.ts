@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CreateAddressDTO } from './dto/createAddress.dto';
 import { AddressEntity } from './entities/address.entity';
 import { UserService } from './../user/user.service';
@@ -36,5 +36,25 @@ export class AddressService {
     }
 
     return addresses;
+  }
+
+  async findCityByName(
+    nameCity: string,
+    nameState: string,
+  ): Promise<AddressEntity> {
+    const address = await this.addressRepository.findOne({
+      where: {
+        city: ILike(nameCity),
+        state: ILike(nameState),
+      },
+    });
+
+    if (!address) {
+      throw new NotFoundException(
+        `Address not found for city "${nameCity}" and state "${nameState}"`,
+      );
+    }
+
+    return address;
   }
 }

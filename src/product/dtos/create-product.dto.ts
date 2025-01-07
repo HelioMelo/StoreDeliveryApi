@@ -15,10 +15,6 @@ export class CreateProductDTO {
 
   @IsOptional()
   @IsNumber()
-  weight?: number;
-
-  @IsOptional()
-  @IsNumber()
   length?: number;
 
   @IsOptional()
@@ -28,8 +24,4 @@ export class CreateProductDTO {
   @IsOptional()
   @IsNumber()
   width?: number;
-
-  @IsOptional()
-  @IsNumber()
-  diameter?: number;
 }

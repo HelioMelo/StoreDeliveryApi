@@ -16,6 +16,7 @@ import { PaymentModule } from './payment/payment.module';
 import { OrderModule } from './order/order.module';
 import { OrderProductModule } from './order-product/order-product.module';
 import { CorreiosApiModule } from './correios-api/correios-api.module';
+import { GoogleApiModule } from './google-api/google-api.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { CorreiosApiModule } from './correios-api/correios-api.module';
     OrderModule,
     OrderProductModule,
     CorreiosApiModule,
+    GoogleApiModule,
   ],
   controllers: [],
   providers: [

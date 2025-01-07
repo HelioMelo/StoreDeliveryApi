@@ -10,6 +10,8 @@ import { In, Repository } from 'typeorm';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { CountProduct } from './dtos/count-product.dto';
+import { CorreiosApiService } from '../correios-api/correios-api.service';
+import { ProductCorreioDTO } from '../correios-api/dto/product.correio.dto';
 
 @Injectable()
 export class ProductService {
@@ -19,6 +21,8 @@ export class ProductService {
 
     @Inject(forwardRef(() => CategoryService))
     private readonly categoryService: CategoryService,
+
+    private readonly correiosApiService: CorreiosApiService,
   ) {}
 
   async findAll(
@@ -58,10 +62,8 @@ export class ProductService {
 
     return this.productRepository.save({
       ...createProduct,
-      weight: createProduct.weight || 0,
       width: createProduct.width || 0,
       length: createProduct.length || 0,
-      diameter: createProduct.diameter || 0,
       height: createProduct.height || 0,
     });
   }
@@ -96,5 +98,19 @@ export class ProductService {
       .select('product.category_id, COUNT(*) as total')
       .groupBy('product.category_id')
       .getRawMany();
+  }
+
+  async findPriceDelivery(cep: string, productId: number): Promise<any> {
+    const product = await this.findProductById(productId);
+
+    const productCorreioDTO = new ProductCorreioDTO(product);
+
+    console.log(product);
+    const returnCorreiosPrice = await this.correiosApiService.findPriceDeliver(
+      cep,
+      productCorreioDTO,
+    );
+
+    return returnCorreiosPrice;
   }
 }
