@@ -1,3 +1,4 @@
+import { StoreService } from './../store/store.service';
 import {
   forwardRef,
   Inject,
@@ -5,7 +6,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CategoryService } from '../category/category.service';
 import { In, Repository } from 'typeorm';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { ProductEntity } from './entities/product.entity';
@@ -19,8 +19,8 @@ export class ProductService {
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
 
-    @Inject(forwardRef(() => CategoryService))
-    private readonly categoryService: CategoryService,
+    @Inject(forwardRef(() => StoreService)) // Mudado para StoreService
+    private readonly storeService: StoreService, // Mudado para storeService
 
     private readonly correiosApiService: CorreiosApiService,
   ) {}
@@ -43,7 +43,7 @@ export class ProductService {
       findOptions = {
         ...findOptions,
         relations: {
-          category: true,
+          store: true, // Mudado para store
         },
       };
     }
@@ -58,13 +58,13 @@ export class ProductService {
   }
 
   async createProduct(createProduct: CreateProductDTO): Promise<ProductEntity> {
-    await this.categoryService.findCategoryById(createProduct.categoryId);
+    await this.storeService.findStoreById(createProduct.storeId); // Mudado para storeService
 
     return this.productRepository.save({
       ...createProduct,
-      width: createProduct.width || 0,
-      length: createProduct.length || 0,
-      height: createProduct.height || 0,
+      width: createProduct.width || '0',
+      length: createProduct.length || '0',
+      height: createProduct.height || ' 0',
     });
   }
 
@@ -74,7 +74,7 @@ export class ProductService {
   ): Promise<ProductEntity> {
     const relations = isRelations
       ? {
-          category: true,
+          store: true,
         }
       : undefined;
 
@@ -92,11 +92,12 @@ export class ProductService {
     return product;
   }
 
-  async countProdutsByCategoryId(): Promise<CountProduct[]> {
+  async countProductsByStoreId(): Promise<CountProduct[]> {
+    // Mudado para Store
     return this.productRepository
       .createQueryBuilder('product')
-      .select('product.category_id, COUNT(*) as total')
-      .groupBy('product.category_id')
+      .select('product.store_id, COUNT(*) as total') // Mudado para store_id
+      .groupBy('product.store_id') // Mudado para store_id
       .getRawMany();
   }
 

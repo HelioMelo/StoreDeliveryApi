@@ -2,7 +2,7 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateProductDTO {
   @IsNumber()
-  categoryId: number;
+  storeId: number;
 
   @IsString()
   name: string;
@@ -15,13 +15,13 @@ export class CreateProductDTO {
 
   @IsOptional()
   @IsNumber()
-  length?: number;
+  length?: string;
 
   @IsOptional()
   @IsNumber()
-  height?: number;
+  height?: string;
 
   @IsOptional()
   @IsNumber()
-  width?: number;
+  width?: string;
 }

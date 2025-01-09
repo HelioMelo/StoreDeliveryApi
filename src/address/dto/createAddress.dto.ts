@@ -1,10 +1,6 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsNumber } from 'class-validator';
 
 export class CreateAddressDTO {
-  @IsString()
-  @IsOptional()
-  complement: string;
-
   @IsString()
   numberAddress: string;
 
@@ -12,8 +8,26 @@ export class CreateAddressDTO {
   cep: string;
 
   @IsString()
+  logradouro: string;
+
+  @IsString()
   city: string;
 
   @IsString()
   state: string;
+
+  @IsString()
+  pin?: string;
+
+  @IsOptional()
+  @IsNumber()
+  latitude?: string;
+
+  @IsOptional()
+  @IsNumber()
+  longitude?: string;
+
+  @IsOptional()
+  @IsString()
+  complement?: string;
 }

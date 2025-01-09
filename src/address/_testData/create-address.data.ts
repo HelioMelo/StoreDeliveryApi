@@ -8,4 +8,5 @@ export const CreateAddressData: CreateAddressDTO = {
   numberAddress: AddressData.numberAddress,
   city: AddressData.city,
   state: AddressData.state,
+  logradouro: AddressData.logradouro,
 };

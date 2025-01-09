@@ -12,4 +12,5 @@ export const AddressData: AddressEntity = {
   updatedAt: new Date(),
   state: 'PB',
   userId: UserEntityData.id,
+  logradouro: 'rua laura ribeiro de araujo',
 };

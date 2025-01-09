@@ -20,6 +20,14 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Get('/:idProduct/delivery/:cep')
+  async findPriceDeliver(
+    @Param('idProduct') idProduct: number,
+    @Param('cep') cep: string,
+  ): Promise<any> {
+    return this.productService.findPriceDelivery(cep, idProduct);
+  }
+
   @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get()
   async findAll(): Promise<ReturnProduct[]> {
@@ -43,13 +51,5 @@ export class ProductController {
     @Body() createProduct: CreateProductDTO,
   ): Promise<ProductEntity> {
     return this.productService.createProduct(createProduct);
-  }
-
-  @Get('/:idProduct/delivery/:cep')
-  async findPriceDeliver(
-    @Param('idProduct') idProduct: number,
-    @Param('cep') cep: string,
-  ): Promise<any> {
-    return this.productService.findPriceDelivery(cep, idProduct);
   }
 }

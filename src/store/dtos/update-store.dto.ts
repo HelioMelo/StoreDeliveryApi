@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class UpdateCategory {
+export class UpdateStore {
   @IsString()
-  name: string;
+  store: string;
 }

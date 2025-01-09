@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { RolesGuard } from './guards/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import { CategoryModule } from './category/category.module';
+
 import { ProductModule } from './product/product.module';
 import { CartModule } from './cart/cart.module';
 import { CartProductModule } from './cart-product/cart-product.module';
@@ -17,6 +17,7 @@ import { OrderModule } from './order/order.module';
 import { OrderProductModule } from './order-product/order-product.module';
 import { CorreiosApiModule } from './correios-api/correios-api.module';
 import { GoogleApiModule } from './google-api/google-api.module';
+import { StoreModule } from './store/store.module';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { GoogleApiModule } from './google-api/google-api.module';
     AddressModule,
     AuthModule,
     JwtModule,
-    CategoryModule,
+    StoreModule,
     ProductModule,
     CartModule,
     CartProductModule,

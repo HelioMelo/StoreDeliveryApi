@@ -55,30 +55,17 @@ export class CorreiosApiService {
   ): Promise<ResponsePriceCorreiosDTO> {
     const url = 'https://www.correios.com.br/@@precosEPrazosView';
 
+    // Definição correta do requestBody
     const requestBody = {
       cepDestino: cep,
       cepOrigem: this.CEP_COMPANY,
-      comprimento: productCorreioDTO.length,
+      comprimento: '20',
       largura: productCorreioDTO.width,
       altura: productCorreioDTO.height,
-      // codProdutoAgencia: '04510',
     };
 
-    try {
-      const response = await this.httpService
-        .post(url, requestBody)
-        .toPromise();
+    const response = await this.httpService.post(url, requestBody).toPromise();
 
-      console.log('response', response);
-
-      if (response && response.data) {
-        return response.data;
-      } else {
-        throw new Error('Resposta inesperada');
-      }
-    } catch (error) {
-      // Trata o erro de forma mais detalhada
-      throw new Error(`Erro ao buscar preço e prazo: ${error.message}`);
-    }
+    return response.data;
   }
 }

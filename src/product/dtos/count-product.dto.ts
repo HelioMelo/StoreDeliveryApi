@@ -1,4 +1,4 @@
 export interface CountProduct {
-  category_id: number;
+  store_id: number;
   total: number;
 }
