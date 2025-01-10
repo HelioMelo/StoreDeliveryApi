@@ -15,17 +15,25 @@ import { CreateProductDTO } from './dtos/create-product.dto';
 import { ReturnProduct } from './dtos/return-product.dto';
 import { ProductEntity } from './entities/product.entity';
 import { ProductService } from './product.service';
+import { ResponseStorePdv } from 'src/store/dtos/response-store-pdv';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Get('/:idProduct/delivery/:cep')
-  async findPriceDeliver(
-    @Param('idProduct') idProduct: number,
+  // @Get('/:idProduct/delivery/:cep')
+  // async findPriceDeliver(
+  //   @Param('idProduct') idProduct: number,
+  //   @Param('cep') cep: string,
+  // ): Promise<any> {
+  //   return this.productService.findPriceDelivery(cep, idProduct);
+  // }
+
+  @Get('/delivery/:cep')
+  async findPriceDeliverPdv(
     @Param('cep') cep: string,
-  ): Promise<any> {
-    return this.productService.findPriceDelivery(cep, idProduct);
+  ): Promise<ResponseStorePdv[]> {
+    return this.productService.findPriceDeliveryPdv(cep);
   }
 
   @Roles(UserType.Admin, UserType.Root, UserType.User)
@@ -36,11 +44,10 @@ export class ProductController {
     );
   }
 
-  @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get('/:productId')
   async findProductById(@Param('productId') productId): Promise<ReturnProduct> {
     return new ReturnProduct(
-      await this.productService.findProductById(productId, true),
+      await this.productService.findProductById(productId),
     );
   }
 

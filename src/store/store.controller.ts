@@ -12,14 +12,23 @@ import { StoreService } from './store.service';
 import { ReturnStore } from './dtos/return-store.dto';
 import { CreateStore } from './dtos/Create-store.dto';
 import { StoreEntity } from './entities/store.entity';
+import { PagedSearchRequest } from './dtos/paged-search-request';
+import { PagedSearchResult } from './dtos/paged-search-result';
 
 @Controller('store')
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
-  @Get()
+  @Get('all')
   async findAllCategories(): Promise<ReturnStore[]> {
     return this.storeService.findAllStores();
+  }
+
+  @Post('all/paginated') // Método GET para obter as lojas
+  async findAllStoresPaginated(
+    @Body() pagedSearchRequest: PagedSearchRequest,
+  ): Promise<PagedSearchResult> {
+    return this.storeService.findAllStoresPaginated(pagedSearchRequest);
   }
 
   @Get('storeById/:storeId')
@@ -27,15 +36,23 @@ export class StoreController {
     return this.storeService.findStoreById(storeId); // Chama o método no serviço
   }
 
-  @Get('storeByCep/:cep')
-  async findNearbyStoresByCep(@Param('cep') cep: string): Promise<any> {
+  @Get('storeByCep/:cep/:pageIndex/:pageSize')
+  async findNearbyStoresByCep(
+    @Param('cep') cep: string,
+    @Param('pageIndex') pageIndex: number,
+    @Param('pageSize') pageSize: number,
+  ): Promise<any> {
     // Verificar se o CEP está presente
     if (!cep) {
       throw new BadRequestException('CEP is required');
     }
 
     // Chama o método findNearbyStoresByCep que usa o CEP para obter a latitude e longitude
-    const nearbyStores = await this.storeService.findNearbyStoresByCep(cep);
+    const nearbyStores = await this.storeService.findNearbyStoresByCep(
+      cep,
+      pageIndex,
+      pageSize,
+    );
 
     return nearbyStores;
   }

@@ -1,3 +1,4 @@
+// import { ResponseEntityDto } from './../store/dtos/response-store.dto';
 import { StoreService } from './../store/store.service';
 import {
   forwardRef,
@@ -9,20 +10,27 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { ProductEntity } from './entities/product.entity';
-import { CountProduct } from './dtos/count-product.dto';
 import { CorreiosApiService } from '../correios-api/correios-api.service';
 import { ProductCorreioDTO } from '../correios-api/dto/product.correio.dto';
+import {
+  ResponseStorePdv,
+  ResponseValue,
+} from '../store/dtos/response-store-pdv';
+import { Utils } from '../store/utils/utils';
+import { GoogleApiService } from '../google-api/google-api.service';
+import { ResponsePriceCorreiosDTO } from './../correios-api/dto/response-price-correios.dto';
+import { AddressEntity } from 'src/address/entities/address.entity';
+import { StoreTypeEnum } from 'src/store/enum/store-type.enum';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
-
-    @Inject(forwardRef(() => StoreService)) // Mudado para StoreService
-    private readonly storeService: StoreService, // Mudado para storeService
-
+    @Inject(forwardRef(() => StoreService))
+    private readonly storeService: StoreService,
     private readonly correiosApiService: CorreiosApiService,
+    private readonly googleApiService: GoogleApiService,
   ) {}
 
   async findAll(
@@ -68,21 +76,12 @@ export class ProductService {
     });
   }
 
-  async findProductById(
-    productId: number,
-    isRelations?: boolean,
-  ): Promise<ProductEntity> {
-    const relations = isRelations
-      ? {
-          store: true,
-        }
-      : undefined;
-
+  async findProductById(productId: number): Promise<ProductEntity> {
     const product = await this.productRepository.findOne({
       where: {
         id: productId,
       },
-      relations,
+      relations: ['store', 'store.addresses'],
     });
 
     if (!product) {
@@ -92,26 +91,161 @@ export class ProductService {
     return product;
   }
 
-  async countProductsByStoreId(): Promise<CountProduct[]> {
-    // Mudado para Store
-    return this.productRepository
-      .createQueryBuilder('product')
-      .select('product.store_id, COUNT(*) as total') // Mudado para store_id
-      .groupBy('product.store_id') // Mudado para store_id
-      .getRawMany();
+  // async countProductsByStoreId(): Promise<CountProduct[]> {
+  //   // Mudado para Store
+  //   return this.productRepository
+  //     .createQueryBuilder('product')
+  //     .select('product.store_id, COUNT(*) as total') // Mudado para store_id
+  //     .groupBy('product.store_id') // Mudado para store_id
+  //     .getRawMany();
+  // }
+
+  async findPriceDeliveryPdv(cep: string): Promise<ResponseStorePdv[]> {
+    const products = await this.productRepository.find({
+      relations: ['store', 'store.addresses'],
+    });
+
+    const { latitude, longitude } =
+      await this.googleApiService.getCoordinatesByCep(cep);
+
+    const nearbyStores: ResponseStorePdv[] = [];
+    const distantStores: ResponseStorePdv[] = [];
+
+    for (const product of products) {
+      const productCorreioDTO = new ProductCorreioDTO(product);
+
+      let distanceCalculated = 0;
+      product.store.addresses.forEach((address: AddressEntity) => {
+        if (address.latitude && address.longitude) {
+          address.distance = Utils.calculateDistance(
+            { latitude, longitude },
+            {
+              latitude: parseFloat(address.latitude),
+              longitude: parseFloat(address.longitude),
+            },
+          );
+          distanceCalculated = parseFloat(address.distance);
+        }
+      });
+
+      const returnCorreiosPrice =
+        await this.correiosApiService.findPriceDeliver(cep, productCorreioDTO);
+
+      // Montar objeto de retorno
+      const responseObject = this.mounthObjectReturn(
+        distanceCalculated,
+        returnCorreiosPrice,
+        product,
+      );
+
+      // Separar lojas próximas (<= 50 km) e distantes (> 50 km)
+      if (distanceCalculated <= 50) {
+        nearbyStores.push(responseObject);
+      } else if (product.store.storeType === StoreTypeEnum.LOJA) {
+        distantStores.push(responseObject);
+      }
+    }
+
+    // Lógica para incluir apenas lojas de acordo com a distância
+    if (nearbyStores.length > 0) {
+      // Se houver lojas próximas, só mostramos essas
+      return nearbyStores.filter((item) => Object.keys(item).length !== 0);
+    }
+
+    // Caso contrário, mostramos apenas as lojas distantes
+    return distantStores.filter((item) => Object.keys(item).length !== 0);
   }
 
-  async findPriceDelivery(cep: string, productId: number): Promise<any> {
-    const product = await this.findProductById(productId);
+  mounthObjectReturn(
+    distanceCalculated: number,
+    responseCorreios: ResponsePriceCorreiosDTO,
+    product: ProductEntity,
+  ): ResponseStorePdv {
+    const responseStorePdv = {} as ResponseStorePdv;
+    const values: ResponseValue[] = [];
 
-    const productCorreioDTO = new ProductCorreioDTO(product);
+    const address =
+      product.store.addresses.length > 0 ? product.store.addresses[0] : null;
 
-    console.log(product);
-    const returnCorreiosPrice = await this.correiosApiService.findPriceDeliver(
-      cep,
-      productCorreioDTO,
-    );
+    if (address) {
+      responseStorePdv.storeName = product.store.store;
+      responseStorePdv.city = address.city;
+      responseStorePdv.postalCode = address.cep;
+      responseStorePdv.type = product.store.storeType;
+      responseStorePdv.distance = address.distance;
+      responseStorePdv.nameProduct = product.name;
 
-    return returnCorreiosPrice;
+      // Preço e descrição com base na distância
+      if (distanceCalculated <= 50) {
+        values.push({
+          prazo: '1 dia útil',
+          price: 'R$ 15,00',
+          description: 'Motoboy',
+        });
+      } else if (product.store.storeType === StoreTypeEnum.LOJA) {
+        values.push(
+          {
+            prazo: responseCorreios[0]?.prazo,
+            codProdutoAgencia: responseCorreios[0]?.codProdutoAgencia,
+            price: responseCorreios[0]?.precoPPN,
+            description: responseCorreios[0]?.urlTitulo,
+          },
+          {
+            prazo: responseCorreios[1]?.prazo,
+            codProdutoAgencia: responseCorreios[1]?.codProdutoAgencia,
+            price: responseCorreios[1]?.precoPPN,
+            description: responseCorreios[1]?.urlTitulo,
+          },
+        );
+      }
+
+      responseStorePdv.value = values;
+    }
+
+    return responseStorePdv;
   }
+
+  // async findPriceDelivery(
+  //   cep: string,
+  //   productId: number,
+  // ): Promise<ResponseEntityDto> {
+  //   const product = await this.findProductById(productId);
+
+  //   const productCorreioDTO = new ProductCorreioDTO(product);
+
+  //   console.log(product);
+
+  //   const returnCorreiosPrice = await this.correiosApiService.findPriceDeliver(
+  //     cep,
+  //     productCorreioDTO,
+  //   ); // E BOM VER MAS ACHO QUE AQUI ELE RETORNA UM ARRAY E NÂO OBJETO
+
+  //   // Check if addresses exists and has at least one item
+  //   const address =
+  //     product.store.addresses && product.store.addresses.length > 0
+  //       ? product.store.addresses[0]
+  //       : null;
+
+  //   if (!address) {
+  //     console.error('Address is missing or empty.');
+  //     // Handle error or fallback logic here
+  //   }
+
+  //   const response: ResponseEntityDto = {
+  //     products: [product],
+  //     position: {
+  //       position: address
+  //         ? {
+  //             lat: String(address.latitude), // Convert to string
+  //             lng: String(address.longitude), // Convert to string
+  //           }
+  //         : { lat: '0', lng: '0' }, // Fallback string values
+  //       title: 'Loja',
+  //     },
+  //     value: [returnCorreiosPrice],
+  //     store: '',
+  //   };
+
+  //   return response;
+  // }
 }

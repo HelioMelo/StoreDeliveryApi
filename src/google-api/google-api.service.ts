@@ -23,7 +23,6 @@ export class GoogleApiService {
       },
     });
 
-    // Acesse a propriedade 'candidates' para obter os resultados
     return data.candidates;
   }
 

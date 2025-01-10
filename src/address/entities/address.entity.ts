@@ -33,9 +33,6 @@ export class AddressEntity {
   @Column({ name: 'state', nullable: false })
   state: string;
 
-  @Column({ nullable: true })
-  pin?: string;
-
   @Column({ name: 'logradouro', nullable: false })
   logradouro: string;
 

@@ -55,7 +55,6 @@ export class CorreiosApiService {
   ): Promise<ResponsePriceCorreiosDTO> {
     const url = 'https://www.correios.com.br/@@precosEPrazosView';
 
-    // Definição correta do requestBody
     const requestBody = {
       cepDestino: cep,
       cepOrigem: this.CEP_COMPANY,

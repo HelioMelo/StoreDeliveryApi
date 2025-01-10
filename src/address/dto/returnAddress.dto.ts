@@ -7,7 +7,6 @@ export class ReturnAddressDTO {
   cep: string;
   city: string;
   state: string;
-  pin?: string;
   logradouro: string;
   latitude?: string;
   longitude?: string;
@@ -21,8 +20,6 @@ export class ReturnAddressDTO {
     this.city = address.city;
     this.state = address.state;
     this.logradouro = address.logradouro;
-    this.pin = address.pin;
-
     this.distance = address.distance;
     this.latitude = address.latitude;
     this.longitude = address.longitude;

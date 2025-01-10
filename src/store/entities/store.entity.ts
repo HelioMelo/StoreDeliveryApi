@@ -12,7 +12,6 @@ import { StoreTypeEnum } from '../enum/store-type.enum';
 
 @Entity({ name: 'store' })
 export class StoreEntity {
-  // A classe precisa ser exportada corretamente
   @PrimaryGeneratedColumn('rowid')
   id: number;
 
@@ -24,9 +23,6 @@ export class StoreEntity {
 
   @Column({ name: 'phone', nullable: true })
   phone: string;
-
-  @Column({ nullable: true })
-  pin?: string;
 
   @Column({ name: 'storeType', nullable: true })
   storeType?: StoreTypeEnum;
