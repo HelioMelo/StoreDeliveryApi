@@ -35,7 +35,7 @@ export class StoreService {
   ): Promise<PagedSearchResult> {
     const { pageIndex, pageSize } = pagedSearchRequest;
 
-    // Verificando se o pageSize é válido
+    // Verificando se o page é válido
     const pageLimit = pageSize > 0 ? pageSize : 10;
 
     // Obtenção do total de registros
@@ -47,7 +47,7 @@ export class StoreService {
       skip: pageIndex * pageLimit,
       take: pageLimit,
       order: {
-        id: 'ASC', // Ordenando pelo campo 'id' em ordem crescente
+        id: 'ASC',
       },
     });
 
@@ -153,7 +153,6 @@ export class StoreService {
     );
   }
 
-  // Buscar lojas próximas com base no CEP
   // Buscar lojas próximas com base no CEP
   async findNearbyStoresByCep(
     cep: string,

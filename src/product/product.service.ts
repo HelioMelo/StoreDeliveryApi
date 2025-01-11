@@ -51,7 +51,7 @@ export class ProductService {
       findOptions = {
         ...findOptions,
         relations: {
-          store: true, // Mudado para store
+          store: true,
         },
       };
     }
@@ -66,7 +66,7 @@ export class ProductService {
   }
 
   async createProduct(createProduct: CreateProductDTO): Promise<ProductEntity> {
-    await this.storeService.findStoreById(createProduct.storeId); // Mudado para storeService
+    await this.storeService.findStoreById(createProduct.storeId);
 
     return this.productRepository.save({
       ...createProduct,
@@ -204,48 +204,4 @@ export class ProductService {
 
     return responseStorePdv;
   }
-
-  // async findPriceDelivery(
-  //   cep: string,
-  //   productId: number,
-  // ): Promise<ResponseEntityDto> {
-  //   const product = await this.findProductById(productId);
-
-  //   const productCorreioDTO = new ProductCorreioDTO(product);
-
-  //   console.log(product);
-
-  //   const returnCorreiosPrice = await this.correiosApiService.findPriceDeliver(
-  //     cep,
-  //     productCorreioDTO,
-  //   ); // E BOM VER MAS ACHO QUE AQUI ELE RETORNA UM ARRAY E NÂO OBJETO
-
-  //   // Check if addresses exists and has at least one item
-  //   const address =
-  //     product.store.addresses && product.store.addresses.length > 0
-  //       ? product.store.addresses[0]
-  //       : null;
-
-  //   if (!address) {
-  //     console.error('Address is missing or empty.');
-  //     // Handle error or fallback logic here
-  //   }
-
-  //   const response: ResponseEntityDto = {
-  //     products: [product],
-  //     position: {
-  //       position: address
-  //         ? {
-  //             lat: String(address.latitude), // Convert to string
-  //             lng: String(address.longitude), // Convert to string
-  //           }
-  //         : { lat: '0', lng: '0' }, // Fallback string values
-  //       title: 'Loja',
-  //     },
-  //     value: [returnCorreiosPrice],
-  //     store: '',
-  //   };
-
-  //   return response;
-  // }
 }
