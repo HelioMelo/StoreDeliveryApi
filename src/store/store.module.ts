@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StoreService } from './store.service';
 import { StoreController } from './store.controller';
 import { StoreEntity } from './entities/store.entity';
-import { AddressEntity } from '../address/entities/address.entity'; // Importando o AddressEntity
+import { AddressEntity } from '../address/entities/address.entity';
 import { ProductModule } from '../product/product.module';
 import { AddressModule } from '../address/address.module';
 

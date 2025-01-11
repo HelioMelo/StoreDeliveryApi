@@ -5,45 +5,71 @@ import { getDistance } from 'geolib';
 import { GoogleApiService } from 'src/google-api/google-api.service';
 import { StoreTypeEnum } from '../enum/store-type.enum';
 
-// Função para formatar o endereço para a API do Google
-export function formatAddressForGoogle(address: AddressEntity): string {
-  return `${address.logradouro}, ${address.city}, ${address.state}, ${address.numberAddress}`;
-}
-
-// Função para obter as coordenadas de um endereço usando a API do Google
-export async function getCoordinatesFromGoogle(
-  googleApiService: GoogleApiService,
-  addressText: string,
-): Promise<{ latitude: string; longitude: string }> {
-  const googleResponse = await googleApiService.findPlaces(addressText);
-  if (googleResponse.length === 0) {
-    throw new BadRequestException(`Invalid address: ${addressText}`);
+// Utilitário para lidar com distâncias e validações
+export class Utils {
+  // Formatar o endereço para a API do Google
+  static formatAddressForGoogle(address: AddressEntity): string {
+    return `${address.logradouro}, ${address.city}, ${address.state}, ${address.numberAddress}`;
   }
-  const { lat, lng } = googleResponse[0].geometry.location;
-  return { latitude: lat.toString(), longitude: lng.toString() };
-}
 
-// Função para calcular a distância entre dois pontos (em km)
-export function calculateDistance(
-  from: { latitude: number; longitude: number },
-  to: { latitude: number; longitude: number },
-): number {
-  return getDistance(from, to) / 1000;
-}
-
-// Função para aplicar as regras de loja ou PDV com base na distância
-export function applyStoreRules(
-  address: AddressEntity,
-  store: StoreEntity,
-): boolean {
-  const distance = parseFloat(address.distance);
-  switch (store.storeType) {
-    case StoreTypeEnum.LOJA:
-      if (distance < 50) return true;
-      if (distance >= 50) return true;
-    case StoreTypeEnum.PDV:
-      if (distance <= 50) return true;
-      if (distance >= 50) return false;
+  // Obter as coordenadas de um endereço usando a API do Google
+  static async getCoordinatesFromGoogle(
+    googleApiService: GoogleApiService,
+    addressText: string,
+  ): Promise<{ latitude: string; longitude: string }> {
+    const googleResponse = await googleApiService.findPlaces(addressText);
+    if (googleResponse.length === 0) {
+      throw new BadRequestException(`Invalid address: ${addressText}`);
+    }
+    const { lat, lng } = googleResponse[0].geometry.location;
+    return { latitude: lat.toString(), longitude: lng.toString() };
   }
-  return false;
+
+  // Calcular a distância entre dois pontos (em km)
+  static calculateDistance(
+    origin: { latitude: number; longitude: number },
+    destination: { latitude: number; longitude: number },
+  ): string {
+    const distanceInMeters = getDistance(origin, destination);
+    return (distanceInMeters / 1000).toFixed(2); // Retorna em quilômetros como string
+  }
+
+  // Filtrar endereços por distância máxima
+  static filterAddressesByDistance(
+    addresses: AddressEntity[],
+    maxDistance: number,
+  ): AddressEntity[] {
+    return addresses.filter((address) => {
+      const distance = parseFloat(address.distance || '0');
+      return distance <= maxDistance;
+    });
+  }
+
+  // Verificar se há endereços dentro de uma distância específica
+  static hasAddressWithinDistance(
+    addresses: AddressEntity[],
+    maxDistance: number,
+  ): boolean {
+    return addresses.some((address) => {
+      const distance = parseFloat(address.distance || '0');
+      return distance <= maxDistance;
+    });
+  }
+
+  // Aplicar regras para lojas ou PDVs com base na distância
+  static applyStoreRules(address: AddressEntity, store: StoreEntity): boolean {
+    if (!address.distance) return false;
+
+    const distance = parseFloat(address.distance);
+
+    if (store.storeType === StoreTypeEnum.LOJA) {
+      return true; // Loja sempre listada
+    }
+
+    if (store.storeType === StoreTypeEnum.PDV) {
+      return distance <= 50; // PDV apenas até 50 km
+    }
+
+    return false;
+  }
 }

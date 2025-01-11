@@ -16,9 +16,6 @@ export class CreateAddressDTO {
   @IsString()
   state: string;
 
-  @IsString()
-  pin?: string;
-
   @IsOptional()
   @IsNumber()
   latitude?: string;

@@ -23,32 +23,24 @@ export class AddressService {
     createAddressDTO: CreateAddressDTO,
     userId: number,
   ): Promise<AddressEntity> {
-    // Verificando se o usuário existe
     await this.userService.findUserById(userId);
 
-    // Verificando se o endereço contém as informações necessárias
     if (createAddressDTO.city && createAddressDTO.state) {
-      // Concatenando cidade e estado para buscar as coordenadas
       const addressText = `${createAddressDTO.city}, ${createAddressDTO.state}, ${createAddressDTO.numberAddress}`;
 
-      // Chamando a API para buscar as coordenadas (latitude e longitude)
       const googleResponse =
         await this.googleApiService.findPlaces(addressText);
 
-      // Se não encontrar nenhuma coordenada, lançamos uma exceção
       if (googleResponse.length === 0) {
         throw new BadRequestException('Invalid address provided');
       }
 
-      // Pegando as coordenadas do primeiro candidato retornado pela API
       const { lat, lng } = googleResponse[0].geometry.location;
 
-      // Atribuindo as coordenadas ao DTO do endereço
       createAddressDTO.latitude = lat.toString();
       createAddressDTO.longitude = lng.toString();
     }
 
-    // Salvando o endereço com as coordenadas e dados do usuário
     return this.addressRepository.save({
       ...createAddressDTO,
       userId,
@@ -116,14 +108,12 @@ export class AddressService {
   async processAddress(
     createAddressDto: CreateAddressDTO,
   ): Promise<AddressEntity> {
-    // Mapeando o DTO para a entidade AddressEntity
     const address = new AddressEntity();
     address.logradouro = createAddressDto.logradouro;
     address.city = createAddressDto.city;
     address.state = createAddressDto.state;
     address.numberAddress = createAddressDto.numberAddress;
 
-    // Concatenando cidade e estado para realizar a busca
     const addressText =
       address.logradouro +
       ', ' +
@@ -133,7 +123,6 @@ export class AddressService {
       ', ' +
       address.numberAddress;
 
-    // Fazendo a consulta ao Google API para encontrar o local
     const googleResponse = await this.googleApiService.findPlaces(addressText);
 
     if (googleResponse.length === 0) {
@@ -142,21 +131,17 @@ export class AddressService {
       );
     }
 
-    // Pegando as coordenadas do primeiro candidato retornado pela API
     const { lat, lng } = googleResponse[0].geometry.location;
 
-    // Atribuindo as coordenadas ao endereço
     address.latitude = lat.toString();
     address.longitude = lng.toString();
-    address.pin = `https://maps.google.com/mapfiles/ms/icons/red-dot.png`;
 
-    // Se o campo 'cep' não foi fornecido, podemos atribuir um valor padrão
     if (!createAddressDto.cep) {
-      address.cep = ''; // Ou algum valor padrão, se necessário
+      address.cep = '';
     } else {
       address.cep = createAddressDto.cep;
     }
 
-    return address; // Retorna a entidade com as coordenadas
+    return address;
   }
 }

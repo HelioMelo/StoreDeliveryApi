@@ -1,2 +1,0 @@
-export const jwtData =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidHlwZVVzZXIiOjEsImlhdCI6MTczNjAxNTA0OSwiZXhwIjoxNzM2NjE5ODQ5fQ.Pl7Jor8z5vtnKol09V4tZ-M62PUD9WkJuP8PdY2_igE';

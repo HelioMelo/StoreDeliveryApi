@@ -5,10 +5,12 @@ import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductEntity } from './entities/product.entity';
+import { GoogleApiModule } from 'src/google-api/google-api.module';
 
 @Module({
   imports: [
     CorreiosApiModule,
+    GoogleApiModule,
     TypeOrmModule.forFeature([ProductEntity]),
     forwardRef(() => StoreModule),
   ],
