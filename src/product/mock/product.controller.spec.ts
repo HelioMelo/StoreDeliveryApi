@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import { PinsEntity } from './../../store/entities/pins.entity';
+=======
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
 import { ProductEntity } from '../entities/product.entity';
 import { ReturnProduct } from './../dtos/return-product.dto';
 import { ProductController } from './../product.controller';
@@ -38,6 +41,7 @@ describe('ProductController', () => {
 
   describe('findPriceDeliverPdv', () => {
     it('should return delivery price data for a product', async () => {
+<<<<<<< HEAD
       const mockPins: PinsEntity = {
         position: {
           lat: '40.7128',
@@ -46,6 +50,8 @@ describe('ProductController', () => {
         title: 'Main Store',
       };
 
+=======
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       const mockResponse: ResponseStorePdv[] = [
         {
           storeName: 'Store 1',
@@ -66,7 +72,10 @@ describe('ProductController', () => {
               description: 'Delivery price 2',
             },
           ],
+<<<<<<< HEAD
           pins: mockPins,
+=======
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
         },
       ];
 
@@ -80,11 +89,16 @@ describe('ProductController', () => {
 
   describe('findAll', () => {
     it('should return an array of products', async () => {
+<<<<<<< HEAD
+=======
+      // Mock de ProductEntity
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       const mockProductEntities: ProductEntity[] = [
         new ProductEntity(),
         new ProductEntity(),
       ];
 
+<<<<<<< HEAD
       mockProductEntities.forEach((product) => {
         product.storeId = 1;
         product.createdAt = new Date();
@@ -93,16 +107,37 @@ describe('ProductController', () => {
 
       jest.spyOn(service, 'findAll').mockResolvedValue(mockProductEntities);
 
+=======
+      // Adicionando valores fictícios para as propriedades necessárias de ProductEntity
+      mockProductEntities.forEach((product) => {
+        product.storeId = 1; // Definindo um valor numérico para storeId
+        product.createdAt = new Date();
+        product.updatedAt = new Date(); // Usando updatedAt em vez de updatedAtts
+      });
+
+      // Simulando que o serviço retorna uma lista de ProductEntity
+      jest.spyOn(service, 'findAll').mockResolvedValue(mockProductEntities);
+
+      // O controlador vai mapear ProductEntity para ReturnProduct
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       const mockReturnProducts = mockProductEntities.map(
         (product) => new ReturnProduct(product),
       );
 
+<<<<<<< HEAD
+=======
+      // Verifique se o controlador retorna o DTO ReturnProduct
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       expect(await controller.findAll()).toEqual(mockReturnProducts);
     });
   });
 
   describe('findProductById', () => {
     it('should return a product by id', async () => {
+<<<<<<< HEAD
+=======
+      // Mock da entidade ProductEntity
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       const mockProductEntity = new ProductEntity();
       mockProductEntity.id = 1;
       mockProductEntity.name = 'Product 1';
@@ -112,12 +147,23 @@ describe('ProductController', () => {
       mockProductEntity.height = '5';
       mockProductEntity.width = '3';
 
+<<<<<<< HEAD
+=======
+      // Simulando que o serviço retorna uma instância de ProductEntity
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       jest
         .spyOn(service, 'findProductById')
         .mockResolvedValue(mockProductEntity);
 
+<<<<<<< HEAD
       const returnProduct = new ReturnProduct(mockProductEntity);
 
+=======
+      // Chamando o controlador, que irá mapear ProductEntity para ReturnProduct
+      const returnProduct = new ReturnProduct(mockProductEntity);
+
+      // Verifique se o controlador retorna o DTO ReturnProduct
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       expect(await controller.findProductById(1)).toEqual(returnProduct);
     });
   });

@@ -1,12 +1,19 @@
 import { ProductCorreioDTO } from './../dto/product.correio.dto';
+<<<<<<< HEAD
 
+=======
+import { ResponsePriceCorreiosDTO } from './../../../dist/correios-api/dto/response-price-correios.dto.d';
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
 import { CorreiosApiService } from './../correios-api.service';
 import { CorreiosApiController } from './../correios-api.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { HttpStatus } from '@nestjs/common';
 import { ReturnCepDTO } from '../dto/return-cep.dto';
+<<<<<<< HEAD
 import { ResponsePriceCorreiosDTO } from '../dto/response-price-correios.dto';
+=======
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
 
 describe('CorreiosApiController', () => {
   let controller: CorreiosApiController;
@@ -51,15 +58,20 @@ describe('CorreiosApiController', () => {
 
   describe('priceDeliver', () => {
     it('should return the delivery price when valid parameters are passed', async () => {
+<<<<<<< HEAD
       // Mock dos valores esperados
       const cep = '12345678';
       const cepStore = '87654321'; // Novo argumento
+=======
+      const cep = '12345678';
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       const product: ProductCorreioDTO = {
         length: '20',
         height: '30',
         width: '10',
       };
 
+<<<<<<< HEAD
       // Mock da resposta do serviço
       const mockResponse: ResponsePriceCorreiosDTO = {
         status: 200,
@@ -88,10 +100,18 @@ describe('CorreiosApiController', () => {
         cepStore,
         product,
       );
+=======
+      const result = await controller.priceDeliver(cep, product);
+
+      expect(result).toHaveProperty('precoAgencia', '15.00');
+      expect(result).toHaveProperty('prazo', '3 dias úteis');
+      expect(service.findPriceDeliver).toHaveBeenCalledWith(cep, product);
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
     });
 
     it('should throw an error if required parameters are missing', async () => {
       const cep = '12345678';
+<<<<<<< HEAD
       const cepStore = null; // Argumento ausente
       const product = null; // Argumento ausente
 
@@ -100,6 +120,14 @@ describe('CorreiosApiController', () => {
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
         expect(error.message).toBe('Missing required parameters'); // Mensagem de erro esperada
+=======
+      const product = null;
+
+      try {
+        await controller.priceDeliver(cep, product);
+      } catch (error) {
+        expect(error.status).toBe(HttpStatus.BAD_REQUEST);
+>>>>>>> 09c725a (feat: update delivery API and remove unused test files)
       }
     });
   });
