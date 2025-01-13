@@ -1,3 +1,4 @@
+import { PinsEntity } from './../../store/entities/pins.entity';
 import { ProductEntity } from '../entities/product.entity';
 import { ReturnProduct } from './../dtos/return-product.dto';
 import { ProductController } from './../product.controller';
@@ -37,6 +38,16 @@ describe('ProductController', () => {
 
   describe('findPriceDeliverPdv', () => {
     it('should return delivery price data for a product', async () => {
+      // Mock da entidade PinsEntity com a estrutura correta
+      const mockPins: PinsEntity = {
+        position: {
+          lat: '40.7128',
+          lng: '-74.0060',
+        },
+        title: 'Main Store',
+      };
+
+      // Mock do ResponseStorePdv
       const mockResponse: ResponseStorePdv[] = [
         {
           storeName: 'Store 1',
@@ -57,13 +68,16 @@ describe('ProductController', () => {
               description: 'Delivery price 2',
             },
           ],
+          pins: mockPins, // Adicionando a propriedade pins com a estrutura correta
         },
       ];
 
+      // Mock do método findPriceDeliveryPdv no serviço
       jest
         .spyOn(service, 'findPriceDeliveryPdv')
         .mockResolvedValue(mockResponse);
 
+      // Testando o método do controller
       expect(await controller.findPriceDeliverPdv('12345')).toBe(mockResponse);
     });
   });

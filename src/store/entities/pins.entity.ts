@@ -1,4 +1,4 @@
-export class PinsEntity {
+export interface PinsEntity {
   position: {
     lat: string;
     lng: string;

@@ -1,3 +1,4 @@
+import { PinsEntity } from './../store/entities/pins.entity';
 // import { ResponseEntityDto } from './../store/dtos/response-store.dto';
 import { StoreService } from './../store/store.service';
 import {
@@ -128,8 +129,15 @@ export class ProductService {
         }
       });
 
+      const address: AddressEntity =
+        product.store.addresses.length > 0 ? product.store.addresses[0] : null;
+
       const returnCorreiosPrice =
-        await this.correiosApiService.findPriceDeliver(cep, productCorreioDTO);
+        await this.correiosApiService.findPriceDeliver(
+          cep,
+          address.cep,
+          productCorreioDTO,
+        );
 
       // Montar objeto de retorno
       const responseObject = this.mounthObjectReturn(
@@ -201,7 +209,14 @@ export class ProductService {
 
       responseStorePdv.value = values;
     }
-
+    const pinMap: PinsEntity = {
+      position: {
+        lat: address.latitude,
+        lng: address.longitude,
+      },
+      title: product.store.store,
+    };
+    responseStorePdv.pins = pinMap;
     return responseStorePdv;
   }
 }

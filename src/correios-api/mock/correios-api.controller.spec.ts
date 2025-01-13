@@ -1,11 +1,12 @@
 import { ProductCorreioDTO } from './../dto/product.correio.dto';
-import { ResponsePriceCorreiosDTO } from './../../../dist/correios-api/dto/response-price-correios.dto.d';
+
 import { CorreiosApiService } from './../correios-api.service';
 import { CorreiosApiController } from './../correios-api.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { HttpStatus } from '@nestjs/common';
 import { ReturnCepDTO } from '../dto/return-cep.dto';
+import { ResponsePriceCorreiosDTO } from '../dto/response-price-correios.dto';
 
 describe('CorreiosApiController', () => {
   let controller: CorreiosApiController;
@@ -50,28 +51,55 @@ describe('CorreiosApiController', () => {
 
   describe('priceDeliver', () => {
     it('should return the delivery price when valid parameters are passed', async () => {
+      // Mock dos valores esperados
       const cep = '12345678';
+      const cepStore = '87654321'; // Novo argumento
       const product: ProductCorreioDTO = {
         length: '20',
         height: '30',
         width: '10',
       };
 
-      const result = await controller.priceDeliver(cep, product);
+      // Mock da resposta do serviço
+      const mockResponse: ResponsePriceCorreiosDTO = {
+        status: 200,
+        mensagemPrecoAgencia: 'Preço calculado com sucesso',
+        prazo: '3 dias úteis',
+        url: 'http://example.com/delivery',
+        mensagemPrecoPPN: 'Preço promocional disponível',
+        codProdutoAgencia: 'AG123',
+        precoPPN: '10.00',
+        codProdutoPPN: 'PPN456',
+        mensagemPrazo: 'Entrega rápida disponível',
+        msg: 'Sucesso',
+        precoAgencia: '15.00',
+        urlTitulo: 'Detalhes da Entrega',
+      };
 
-      expect(result).toHaveProperty('precoAgencia', '15.00');
-      expect(result).toHaveProperty('prazo', '3 dias úteis');
-      expect(service.findPriceDeliver).toHaveBeenCalledWith(cep, product);
+      jest.spyOn(service, 'findPriceDeliver').mockResolvedValue(mockResponse);
+
+      // Chamada ao método do controller
+      const result = await controller.priceDeliver(cep, cepStore, product);
+
+      // Verificações
+      expect(result).toEqual(mockResponse);
+      expect(service.findPriceDeliver).toHaveBeenCalledWith(
+        cep,
+        cepStore,
+        product,
+      );
     });
 
     it('should throw an error if required parameters are missing', async () => {
       const cep = '12345678';
-      const product = null;
+      const cepStore = null; // Argumento ausente
+      const product = null; // Argumento ausente
 
       try {
-        await controller.priceDeliver(cep, product);
+        await controller.priceDeliver(cep, cepStore, product);
       } catch (error) {
         expect(error.status).toBe(HttpStatus.BAD_REQUEST);
+        expect(error.message).toBe('Missing required parameters'); // Mensagem de erro esperada
       }
     });
   });

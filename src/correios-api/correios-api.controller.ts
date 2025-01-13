@@ -30,9 +30,14 @@ export class CorreiosApiController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   async priceDeliver(
     @Query('cep') cep: string,
+    @Query('cepStore') cepStore: string,
     @Query() productCorreioDTO: ProductCorreioDTO,
   ): Promise<ResponsePriceCorreiosDTO> {
-    return this.correiosApiService.findPriceDeliver(cep, productCorreioDTO);
+    return this.correiosApiService.findPriceDeliver(
+      cep,
+      cepStore,
+      productCorreioDTO,
+    );
   }
 
   @Get(':cep')
