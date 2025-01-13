@@ -38,7 +38,6 @@ describe('ProductController', () => {
 
   describe('findPriceDeliverPdv', () => {
     it('should return delivery price data for a product', async () => {
-      // Mock da entidade PinsEntity com a estrutura correta
       const mockPins: PinsEntity = {
         position: {
           lat: '40.7128',
@@ -47,7 +46,6 @@ describe('ProductController', () => {
         title: 'Main Store',
       };
 
-      // Mock do ResponseStorePdv
       const mockResponse: ResponseStorePdv[] = [
         {
           storeName: 'Store 1',
@@ -68,51 +66,43 @@ describe('ProductController', () => {
               description: 'Delivery price 2',
             },
           ],
-          pins: mockPins, // Adicionando a propriedade pins com a estrutura correta
+          pins: mockPins,
         },
       ];
 
-      // Mock do método findPriceDeliveryPdv no serviço
       jest
         .spyOn(service, 'findPriceDeliveryPdv')
         .mockResolvedValue(mockResponse);
 
-      // Testando o método do controller
       expect(await controller.findPriceDeliverPdv('12345')).toBe(mockResponse);
     });
   });
 
   describe('findAll', () => {
     it('should return an array of products', async () => {
-      // Mock de ProductEntity
       const mockProductEntities: ProductEntity[] = [
         new ProductEntity(),
         new ProductEntity(),
       ];
 
-      // Adicionando valores fictícios para as propriedades necessárias de ProductEntity
       mockProductEntities.forEach((product) => {
-        product.storeId = 1; // Definindo um valor numérico para storeId
+        product.storeId = 1;
         product.createdAt = new Date();
-        product.updatedAt = new Date(); // Usando updatedAt em vez de updatedAtts
+        product.updatedAt = new Date();
       });
 
-      // Simulando que o serviço retorna uma lista de ProductEntity
       jest.spyOn(service, 'findAll').mockResolvedValue(mockProductEntities);
 
-      // O controlador vai mapear ProductEntity para ReturnProduct
       const mockReturnProducts = mockProductEntities.map(
         (product) => new ReturnProduct(product),
       );
 
-      // Verifique se o controlador retorna o DTO ReturnProduct
       expect(await controller.findAll()).toEqual(mockReturnProducts);
     });
   });
 
   describe('findProductById', () => {
     it('should return a product by id', async () => {
-      // Mock da entidade ProductEntity
       const mockProductEntity = new ProductEntity();
       mockProductEntity.id = 1;
       mockProductEntity.name = 'Product 1';
@@ -122,15 +112,12 @@ describe('ProductController', () => {
       mockProductEntity.height = '5';
       mockProductEntity.width = '3';
 
-      // Simulando que o serviço retorna uma instância de ProductEntity
       jest
         .spyOn(service, 'findProductById')
         .mockResolvedValue(mockProductEntity);
 
-      // Chamando o controlador, que irá mapear ProductEntity para ReturnProduct
       const returnProduct = new ReturnProduct(mockProductEntity);
 
-      // Verifique se o controlador retorna o DTO ReturnProduct
       expect(await controller.findProductById(1)).toEqual(returnProduct);
     });
   });
