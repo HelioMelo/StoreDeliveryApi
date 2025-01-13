@@ -5,11 +5,3 @@ export interface PinsEntity {
   };
   title: string;
 }
-
-export class PinsEntity {
-  position: {
-    lat: string;
-    lng: string;
-  };
-  title: string;
-}
