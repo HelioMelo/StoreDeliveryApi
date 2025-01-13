@@ -1,3 +1,5 @@
+import { PinsEntity } from './../entities/pins.entity';
+
 export interface ResponseStorePdv {
   storeName: string;
   nameProduct: string;
@@ -6,6 +8,7 @@ export interface ResponseStorePdv {
   type: string;
   distance: string;
   value: ResponseValue[];
+  pins: PinsEntity;
 }
 
 export interface ResponseValue {

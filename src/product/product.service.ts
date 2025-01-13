@@ -1,3 +1,4 @@
+import { PinsEntity } from './../store/entities/pins.entity';
 // import { ResponseEntityDto } from './../store/dtos/response-store.dto';
 import { StoreService } from './../store/store.service';
 import {
@@ -114,94 +115,12 @@ export class ProductService {
     for (const product of products) {
       const productCorreioDTO = new ProductCorreioDTO(product);
 
-      let distanceCalculated = 0;
-      product.store.addresses.forEach((address: AddressEntity) => {
-        if (address.latitude && address.longitude) {
-          address.distance = Utils.calculateDistance(
-            { latitude, longitude },
-            {
-              latitude: parseFloat(address.latitude),
-              longitude: parseFloat(address.longitude),
-            },
-          );
-          distanceCalculated = parseFloat(address.distance);
-        }
-      });
+    console.log(product);
+    const returnCorreiosPrice = await this.correiosApiService.findPriceDeliver(
+      cep,
+      productCorreioDTO,
+    );
 
-      const returnCorreiosPrice =
-        await this.correiosApiService.findPriceDeliver(cep, productCorreioDTO);
-
-      // Montar objeto de retorno
-      const responseObject = this.mounthObjectReturn(
-        distanceCalculated,
-        returnCorreiosPrice,
-        product,
-      );
-
-      // Separar lojas próximas (<= 50 km) e distantes (> 50 km)
-      if (distanceCalculated <= 50) {
-        nearbyStores.push(responseObject);
-      } else if (product.store.storeType === StoreTypeEnum.LOJA) {
-        distantStores.push(responseObject);
-      }
-    }
-
-    // Lógica para incluir apenas lojas de acordo com a distância
-    if (nearbyStores.length > 0) {
-      // Se houver lojas próximas, só mostramos essas
-      return nearbyStores.filter((item) => Object.keys(item).length !== 0);
-    }
-
-    // Caso contrário, mostramos apenas as lojas distantes
-    return distantStores.filter((item) => Object.keys(item).length !== 0);
-  }
-
-  mounthObjectReturn(
-    distanceCalculated: number,
-    responseCorreios: ResponsePriceCorreiosDTO,
-    product: ProductEntity,
-  ): ResponseStorePdv {
-    const responseStorePdv = {} as ResponseStorePdv;
-    const values: ResponseValue[] = [];
-
-    const address =
-      product.store.addresses.length > 0 ? product.store.addresses[0] : null;
-
-    if (address) {
-      responseStorePdv.storeName = product.store.store;
-      responseStorePdv.city = address.city;
-      responseStorePdv.postalCode = address.cep;
-      responseStorePdv.type = product.store.storeType;
-      responseStorePdv.distance = address.distance;
-      responseStorePdv.nameProduct = product.name;
-
-      // Preço e descrição com base na distância
-      if (distanceCalculated <= 50) {
-        values.push({
-          prazo: '1 dia útil',
-          price: 'R$ 15,00',
-          description: 'Motoboy',
-        });
-      } else if (product.store.storeType === StoreTypeEnum.LOJA) {
-        values.push(
-          {
-            prazo: responseCorreios[0]?.prazo,
-            codProdutoAgencia: responseCorreios[0]?.codProdutoAgencia,
-            price: responseCorreios[0]?.precoPPN,
-            description: responseCorreios[0]?.urlTitulo,
-          },
-          {
-            prazo: responseCorreios[1]?.prazo,
-            codProdutoAgencia: responseCorreios[1]?.codProdutoAgencia,
-            price: responseCorreios[1]?.precoPPN,
-            description: responseCorreios[1]?.urlTitulo,
-          },
-        );
-      }
-
-      responseStorePdv.value = values;
-    }
-
-    return responseStorePdv;
+    return returnCorreiosPrice;
   }
 }

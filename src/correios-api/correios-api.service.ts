@@ -51,13 +51,14 @@ export class CorreiosApiService {
 
   async findPriceDeliver(
     cep: string,
+    cepStore: string,
     productCorreioDTO: ProductCorreioDTO,
   ): Promise<ResponsePriceCorreiosDTO> {
     const url = 'https://www.correios.com.br/@@precosEPrazosView';
 
     const requestBody = {
       cepDestino: cep,
-      cepOrigem: this.CEP_COMPANY,
+      cepOrigem: cepStore,
       comprimento: '20',
       largura: productCorreioDTO.width,
       altura: productCorreioDTO.height,
